@@ -6,11 +6,13 @@ var async = require('async');
 var _ = require('underscore');
 
 var argv = require('optimist')
-    .demand(['s', 'u', 'p'])
-    .alias('s', 'server')
+    .demand(['S', 'U', 'P'])
+    .alias('S', 'server')
     .alias('o', 'port')
-    .alias('u', 'user')
-    .alias('p', 'password')
+    .alias('U', 'user')
+    .alias('P', 'password')
+    .alias('q', 'dummy')
+    .alias('Q', 'dummy')
     .alias('d', 'database')
     .alias('t', 'timeout')
     .alias('m', 'param')
@@ -23,7 +25,7 @@ var argv = require('optimist')
     .describe('m', 'Format: param1=foo')
     .describe('no-quoted-identifier', 'Disable quoted identifiers.')
     .usage('Usage:' + eol +
-           '  sqlcmd -s <server> [-o <port>] -u <username> -p <password> [-d <database>] [-t <timeout>] [--no-quoted-identifier] [-m param1=foo -m param2=bar ...] <script>')
+           '  sqlcmd -S <server> [-o <port>] -U <username> -P <password> [-d <database>] [-t <timeout>] [-q "<query>"] [-Q "<queryAndExit>"] [--no-quoted-identifier] [-m param1=foo -m param2=bar ...]')
     .argv;
 
 getScript(function(error, script) {
