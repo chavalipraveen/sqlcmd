@@ -8,7 +8,6 @@ var _ = require('underscore');
 var argv = require('optimist')
     .demand(['S', 'U', 'P'])
     .alias('S', 'server')
-    .alias('o', 'port')
     .alias('U', 'user')
     .alias('P', 'password')
     .alias('q', 'dummy')
@@ -16,16 +15,17 @@ var argv = require('optimist')
     .alias('d', 'database')
     .alias('t', 'timeout')
     .alias('m', 'param')
+    .alias('e', 'echoInput')
+    .alias('b', 'batchAbortOnErr')
     .describe('s', '')
     .describe('u', '')
     .describe('p', '')
-    .describe('o', 'Default: 1433')
     .describe('d', 'Default: master')
     .describe('t', 'Default: 60 seconds')
     .describe('m', 'Format: param1=foo')
     .describe('no-quoted-identifier', 'Disable quoted identifiers.')
     .usage('Usage:' + eol +
-           '  sqlcmd -S <server> [-o <port>] -U <username> -P <password> [-d <database>] [-t <timeout>] [-q "<query>"] [-Q "<queryAndExit>"] [--no-quoted-identifier] [-m param1=foo -m param2=bar ...]')
+           '  sqlcmd -S <server> -U <username> -P <password> [-d <database>] [-t <timeout>] [-q "<query>"] [-Q "<queryAndExit>"] [--no-quoted-identifier] [-m param1=foo -m param2=bar ...]')
     .argv;
 
 getScript(function(error, script) {
@@ -115,6 +115,8 @@ function replaceTemplateParams(script, callback) {
 
 function connectToServer(callback) {
   var match = /^(.*)\\(.*)$/.exec(argv.user);
+  var argServer = /^[^,]*/.exec(server)[0];
+  var argPort = /[^,]*$/.exec(server)[0];
 
   if (match) {
     argv.domain = match[1];
@@ -122,11 +124,11 @@ function connectToServer(callback) {
   }
 
   var config = {
-    server: argv.server,
+    server: argServer,
     domain: argv.domain,
     user: argv.user,
     password: argv.password,
-    port: argv.port || 1433,
+    port: argPort || 1433,
     database: argv.database || 'master',
     requestTimeout: (argv.timeout || 60) * 1000
   }
